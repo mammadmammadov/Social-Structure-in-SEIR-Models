@@ -72,6 +72,7 @@ get.net <- function(beta, h, nc) {
                 # ncβiβj / β_^2(n − 1)
                 probable_link <- nc * beta[i] * beta[j] / d
                 # print(probable_link)
+                # probable_link gives very small values (0.0X), so we use runif(1) < probable_link
                 if(runif(1) < probable_link) {
                     network[[i]] <- c(network[[i]], j)
                     network[[j]] <- c(network[[j]], i)
