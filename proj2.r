@@ -1,18 +1,24 @@
 # In this project, we will simulate the spread of an infectious disease in a population using an SEIR model.
 
-# The main states in the SEIR model is as follows: 
-# S -> Susceptible
+# The main states in the SEIR model are as follows: 
+# S -> Susceptible (healthy but can get infected)
 # E -> Exposed (infected but not yet infectious)
-# I -> Infectious
+# I -> Infectious (can spread the disease)
 # R -> Recovered (and immune)
 
-# The population will be structured into households and a contact network, and we will consider different modes of transmission.
+# First, we will create a population with households. n people will be assigned to households of varying sizes, with a maximum household size of hmax.
 
-# First, we will create a population with households and a contact network
-# Then, we will simulate the spread of the disease over time such to track the number of individuals in each state (S, E, I, R) 
-# Finally, we will plot the results of the simulation
+# Second, we will create a contact network for the population based on individual sociability parameters (beta) and an average number of contacts (nc).
 
-#*******************************************************************
+# Third, we will implement the SEIR model on the contact network. We will define parameters for infection probabilities (alpha), recovery probability (delta), and the probability of exposed individuals becoming infectious (gamma).
+# When susceptible individuals come into contact with infectious individuals, they may become exposed based on the defined infection probabilities. This can happen through household contacts, regular contacts in the network, or random contacts.
+# Then, we will simulate the spread of the disease over time to track the number of individuals in each state (S, E, I, R)
+
+# Finally, we will run and plot the simulation under different scenarios, such as varying the infection probabilities and sociability parameters, to observe how these changes affect the spread of the disease.
+
+
+# *******************************************************************
+# *******************************************************************
 
 # INPUTS:
 # n is the total population size
@@ -157,6 +163,7 @@ get.net <- function(beta, h, nc) {
 # has_contact_with_housemate <- any(contacts_of_1 %in% housemates)
 # print(has_contact_with_housemate)
 
+# ********************************************************************
 # ********************************************************************
 
 # Now, we will implement the SEIR model on a given contact network
