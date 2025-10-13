@@ -1,3 +1,7 @@
+# SOCIAL STRUCTURE IN SEIR MODELS
+
+# Repository link: https://github.com/mammadmammadov/Statistical-Programming-Practical-2
+
 # In this project, we will simulate the spread of an infectious disease in a population using an SEIR model.
 
 # The main states in the SEIR model are as follows: 
