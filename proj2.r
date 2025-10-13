@@ -329,14 +329,28 @@ nseir <- function(beta, h, alink, alpha = c(.1, .01, .01), delta = .2, gamma = .
 # simulation_result is the output of the nseir function
 
 # this function does not return anything, it just creates a plot
-plot_simulation <- function(simulation_result) {
-    plot(simulation_result$t, simulation_result$S, type = "l", col = "blue", ylim = c(0, max(simulation_result$S, simulation_result$E, simulation_result$I, simulation_result$R)), 
-         xlab = "Days", ylab = "Number of Individuals", main = "SEIR Model Simulation")
-    lines(simulation_result$t, simulation_result$E, col = "orange", lwd = 2)
-    lines(simulation_result$t, simulation_result$I, col = "red", lwd = 2)
-    lines(simulation_result$t, simulation_result$R, col = "green", lwd = 2)
-    legend("right", legend = c("susceptible", "exposed", "infected", "recovered"), 
-           col = c("blue", "orange", "red", "green"), lty = 1)
+plot_simulation <- function(simulation_result, title) {
+    # Main plot
+    plot(simulation_result$t, simulation_result$S, 
+        type = "l", 
+        col = "dodgerblue3",
+        lwd = 2, 
+        ylim = c(0, max(simulation_result$S, simulation_result$E, simulation_result$I, simulation_result$R)), 
+        xlab = "Days", 
+        ylab = "Number of Individuals", 
+        main = title)
+
+    # Add Exposed, Infected, and Recovered plot  
+    lines(simulation_result$t, simulation_result$E, col = "orange2", lwd = 2)
+    lines(simulation_result$t, simulation_result$I, col = "red2", lwd = 2)
+    lines(simulation_result$t, simulation_result$R, col = "green4", lwd = 2)
+
+    # Add legend
+    legend("right", 
+        legend = c("Susceptible", "Exposed", "Infected", "Recovered"), 
+        col = c("dodgerblue3", "orange2", "red2", "green4"), 
+        lty = 1,
+        lwd = 2)
 }
 
 # ************************************************************
@@ -346,19 +360,19 @@ plot_simulation <- function(simulation_result) {
 
 set.seed(42)
 
-population_size <- 1000
+population_size <- 10000
 
 max_household_size <- 5
 
 average_contacts <- 15
 
-simulation_days <- 150
+simulation_days <- 100
 
-infection_probabilities <- c(0.1, 0.02, 0.05)
+infection_probabilities <- c(0.1, 0.01, 0.01)
 
-prob_recovery <- 0.1 # daily probability of infected -> recovered
+prob_recovery <- 0.2 # daily probability of infected -> recovered
 
-prob_exposed_to_infected <- 0.2 # daily probability of exposed -> infected
+prob_exposed_to_infected <- 0.4 # daily probability of exposed -> infected
 
 initial_infection_rate <- 0.005 # proportion of the initial population to randomly start in the infected state
 
@@ -368,18 +382,80 @@ h <- create_households(n = population_size, hmax = max_household_size) # assigni
 
 net <- get.net(beta = beta, h = h, nc = average_contacts) #creating the contact network
 
-result <- nseir(beta = beta, h = h, alink = net,
- alpha = infection_probabilities, delta = prob_recovery,
- gamma = prob_exposed_to_infected, nc = average_contacts, nt = simulation_days,
-    pinf = initial_infection_rate)
+result <- nseir(beta = beta, 
+                h = h, 
+                alink = net,
+                alpha = infection_probabilities, 
+                delta = prob_recovery,
+                gamma = prob_exposed_to_infected, 
+                nc = average_contacts, 
+                nt = simulation_days,
+                pinf = initial_infection_rate)
 
-plot_simulation(result)
+plot_simulation(result, "SEIR Model Simulation")
 
+##############################################################
 
+h <- create_households(n = population_size, hmax = max_household_size) # assigning households to individuals
 
+# Model 1 - Default paremeters
+net <- get.net(beta = beta, h = h, nc = average_contacts)
+result_model_1 <- nseir(beta = beta, 
+                        h = h, 
+                        alink = net,
+                        alpha = infection_probabilities, 
+                        delta = prob_recovery,
+                        gamma = prob_exposed_to_infected, 
+                        nc = average_contacts, 
+                        nt = simulation_days,
+                        pinf = initial_infection_rate)
 
+# Model 2 - Only random infection
+infection_probabilities_modified <- c(0, 0, 0.04)
+net <- get.net(beta = beta, h = h, nc = average_contacts)
+result_model_2 <- nseir(beta = beta, 
+                        h = h, 
+                        alink = net,
+                        alpha = infection_probabilities_modified, 
+                        delta = prob_recovery,
+                        gamma = prob_exposed_to_infected, 
+                        nc = average_contacts, 
+                        nt = simulation_days,
+                        pinf = initial_infection_rate)
 
+# Model 3 - Constant beta
+beta_modified = rep(mean(beta), population_size)
+net <- get.net(beta = beta_modified, h = h, nc = average_contacts)
+result_model_3 <- nseir(beta = beta_modified, 
+                        h = h, 
+                        alink = net,
+                        alpha = infection_probabilities, 
+                        delta = prob_recovery,
+                        gamma = prob_exposed_to_infected, 
+                        nc = average_contacts, 
+                        nt = simulation_days,
+                        pinf = initial_infection_rate)
 
+# Model 4 - Constant beta and random infection
+infection_probabilities_modified <- c(0, 0, 0.04)
+beta_modified = rep(mean(beta), population_size)
+net <- get.net(beta = beta_modified, h = h, nc = average_contacts)
+result_model_4 <- nseir(beta = beta_modified, 
+                        h = h, 
+                        alink = net,
+                        alpha = infection_probabilities_modified, 
+                        delta = prob_recovery,
+                        gamma = prob_exposed_to_infected, 
+                        nc = average_contacts, 
+                        nt = simulation_days,
+                        pinf = initial_infection_rate)
 
+# Plot all model
 
-
+# 4 figures arranged in 2 rows and 2 columns
+attach(mtcars)
+par(mfrow=c(2,2))
+plot_simulation(result_model_1, "Default parameters")
+plot_simulation(result_model_2, "Only random mixing")
+plot_simulation(result_model_3, "Constant Beta")
+plot_simulation(result_model_4, "Only random mixing and constant Beta")
