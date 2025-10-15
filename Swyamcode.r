@@ -1,5 +1,5 @@
 # --- SOCIAL STRUCTURE IN SEIR MODELS ---
-#
+start <- proc.time()
 # Repository link: https://github.com/mammadmammadov/Statistical-Programming-Practical-2
 # Team Contribution: [Insert statement of proportional contribution by team members here]
 #
@@ -25,7 +25,7 @@
 # OUTPUT:
 # - h: An n-vector of integers, where h[i] is the household ID of person i.
 
-create_households <- function(n = 1000, hmax = 5) {
+create_households <- function(n = 10000, hmax = 5) {
   
   # The strategy is to generate household sizes until their sum exceeds n, 
   # then adjust the last one to fit n exactly.
@@ -367,7 +367,7 @@ plot_simulation <- function(simulation_result, title) {
 set.seed(42)
 
 # --- Define General Parameters ---
-population_size <- 1000 # Use 1000 for testing, but should scale to 10000+
+population_size <- 10000 # Use 10000 for testing, but should scale to 10000+
 max_household_size <- 5
 average_contacts <- 15 # nc
 simulation_days <- 100 # nt
@@ -465,7 +465,7 @@ plot_simulation(result_model_1, "Scenario 1: Full Model (Heterogeneous Beta)")
 plot_simulation(result_model_2, "Scenario 2: Only Random Mixing (Heterogeneous Beta)")
 plot_simulation(result_model_3, "Scenario 3: Full Model (Constant Beta)")
 plot_simulation(result_model_4, "Scenario 4: Only Random Mixing (Constant Beta)")
-
+print((proc.time() -start))
 
 # --- Comment on Apparent Effect of Structure ---
 
