@@ -24,18 +24,18 @@
 # *******************************************************************
 # *******************************************************************
 
-# INPUTS:
-# n is the total population size
-# hmax is the maximum household size
-
-# OUTPUT:
-# a vector of length n assigning each individual to a household 
-# (for instance,if individual 1 is in household 3, then the first element of the vector will be 3)
-
-# PURPOSE:
-# this function creates households for a population of size n, with household sizes ranging from 1 to hmax
-
 create_households <- function(n = 1000, hmax = 5) {
+  
+  # INPUTS:
+  # n is the total population size
+  # hmax is the maximum household size
+  
+  # OUTPUT:
+  # a vector of length n assigning each individual to a household 
+  # (for instance,if individual 1 is in household 3, then the first element of the vector will be 3)
+  
+  # PURPOSE:
+  # this function creates households for a population of size n, with household sizes ranging from 1 to hmax
   
   
   household_sizes <- c()
@@ -95,6 +95,17 @@ create_households <- function(n = 1000, hmax = 5) {
 # Now we will create the contact network for for the population
 
 get.net <- function(beta, h, nc = 15) {
+  
+  # INPUTS:
+  # beta is a vector of sociability parameters
+  # h is a vector assigning each individual to a household
+  # nc is the average number of contacts
+  
+  # OUTPUT:
+  # a list of length n, where each element is a vector of indices representing the contacts of that individual
+  
+  # PURPOSE:
+  # this function creates a contact network for a population based on individual sociability parameters (beta) and an average number of contacts (nc)
   
   n <- length(beta)
   beta_mean <- mean(beta)
@@ -209,29 +220,31 @@ get.net <- function(beta, h, nc = 15) {
 
 # Now, we will implement the SEIR model on a given contact network
 
-# INPUTS:
 
-# beta is a vector of sociability parameters
-# h is a vector assigning each individual to a household
-# alink is an adjacency list representing the contact network
-# alpha is a vector of infection probabilities(within household, within regular network, random)
-# delta is a daily probability of infected -> recovered
-# gamma is a daily probability of exposed -> infected
-# nc is the average number of contacts
-# nt is the number of days to simulate
-# pinf is the proportion of the initial population to randomly start in the infected state
-
-# OUTPUT:
-# This function returns a list containing the time series of S, E, I, R counts and the time vector
-
-# PURPOSE:
-# This function simulates the spread of an infectious disease in a population using an SEIR model.
-# First, it initializes the state of each individual and sets up the parameters for the simulation.
-# Then, in each iteration, it updates the state of each individual based on the defined probabilities and contact network.
-# Finally, it returns the time series of the counts of individuals in each state (S, E, I, R) over the simulated period.
 
 
 nseir <- function(beta, h, alink, alpha = c(.1, .01, .01), delta = .2, gamma = .4, nc = 15, nt = 100, pinf = .005){
+  
+  # INPUTS:
+  
+  # beta is a vector of sociability parameters
+  # h is a vector assigning each individual to a household
+  # alink is an adjacency list representing the contact network
+  # alpha is a vector of infection probabilities(within household, within regular network, random)
+  # delta is a daily probability of infected -> recovered
+  # gamma is a daily probability of exposed -> infected
+  # nc is the average number of contacts
+  # nt is the number of days to simulate
+  # pinf is the proportion of the initial population to randomly start in the infected state
+  
+  # OUTPUT:
+  # This function returns a list containing the time series of S, E, I, R counts and the time vector
+  
+  # PURPOSE:
+  # This function simulates the spread of an infectious disease in a population using an SEIR model.
+  # First, it initializes the state of each individual and sets up the parameters for the simulation.
+  # Then, in each iteration, it updates the state of each individual based on the defined probabilities and contact network.
+  # Finally, it returns the time series of the counts of individuals in each state (S, E, I, R) over the simulated period.
   
   # defining states as integers for easier handling
   s_state <- 1
@@ -277,6 +290,9 @@ nseir <- function(beta, h, alink, alpha = c(.1, .01, .01), delta = .2, gamma = .
   # assigning it to a variable named "d" for easier use later on
   d <- (beta_mean^2) * (n - 1)
   
+  # creating a list of household members for each individual
+  household_members <- tapply(1:n ,h, list, simplify = FALSE)
+  
   # simulating the disease spread over nt days
   for(day in 1:nt){
     
@@ -317,67 +333,63 @@ nseir <- function(beta, h, alink, alpha = c(.1, .01, .01), delta = .2, gamma = .
     new_exposed <- logical(n) 
     
     if(length(S_current) > 0 && length(I_current) > 0){
-      # looping over each infected individual to determine whom they infect
-      for(i in I_current){
-        
-        # updating susceptibles not already exposed
-        current_susceptibles <- S_current[!new_exposed[S_current]] 
-        # no need to continue if no susceptibles left
-        if(length(current_susceptibles) == 0){
-          break
-        }
-        
-        # WITHIN HOUSEHOLD TRANSMISSION
-        
-        # finding household members of infected individual i
-        household_members <- which(h == h[i])
-        
-        # finding susceptibles in the same household
-        household_susceptibles <- intersect(current_susceptibles, household_members)
-        
-        # infecting susceptibles in the household based on alpha_h
-        if(length(household_susceptibles) > 0){
-          infected_in_household <- household_susceptibles[runif(length(household_susceptibles)) < alpha_h]
-          new_exposed[infected_in_household] <- TRUE
-        }
-        
-        # WITHIN REGULAR CONTACT NETWORK TRANSMISSION
-        
-        # updating susceptibles not already exposed
-        current_susceptibles <- S_current[!new_exposed[S_current]] 
-        
-        # no need to continue if no susceptibles left
-        if(length(current_susceptibles) == 0){
-          break 
-        }
-        
-        # finding susceptibles in the contact network of infected individual i
-        network_susceptibles <- intersect(current_susceptibles, alink[[i]])
-        
-        # infecting susceptibles in the contact network based on alpha_c
-        if(length(network_susceptibles) > 0){
-          infected_in_network <- network_susceptibles[runif(length(network_susceptibles)) < alpha_c]
-          new_exposed[infected_in_network] <- TRUE
-        }
-        
-        # RANDOM TRANSMISSION
-        
-        # updating susceptibles not already exposed
-        current_susceptibles <- S_current[!new_exposed[S_current]] 
-        
-        # no need to continue if no susceptibles left
-        if(length(current_susceptibles) == 0){
-          break
-        }
-        # infecting random susceptibles based on probability alpha_r * nc * β_i * β_j / β_^2(n − 1)
-        random_susceptibles <- current_susceptibles[runif(length(current_susceptibles)) < (alpha_r * nc * beta[i] * beta[current_susceptibles] / d)]
-        new_exposed[random_susceptibles] <- TRUE
+      
+      
+      # WITHIN HOUSEHOLD
+      
+      infected_household_indices <- unique(h[I_current])
+      
+      # identifying (potential) susceptibles in households with at least one infected individual
+      susceptible_in_infected_households <- unlist(household_members[as.character(infected_household_indices)])
+      
+      # susceptibles to check for possible exposure
+      susceptibles_to_check_household <- intersect(S_current, susceptible_in_infected_households)
+      
+      if(length(susceptibles_to_check_household) > 0){
+        exposed_from_household <- susceptibles_to_check_household[runif(length(susceptibles_to_check_household)) < alpha_h]
+        new_exposed[exposed_from_household] <- TRUE
       }
+      
+      # REGULAR CONTACT NETWORK
+      
+      # susceptibles to check for possible exposure in the contact network excluding those already exposed from household
+      susceptibles_to_check_network <- S_current[!new_exposed[S_current]]
+      
+      infected_contacts <- unlist(alink[I_current])
+      
+      susceptibles_in_infected_contacts <- intersect(susceptibles_to_check_network, infected_contacts)
+      
+      if(length(susceptibles_in_infected_contacts) > 0){
+        exposed_from_contacts <- susceptibles_in_infected_contacts[runif(length(susceptibles_in_infected_contacts)) < alpha_c]
+        new_exposed[exposed_from_contacts] <- TRUE
+      }
+      
+      # RANDOM MIXING
+      
+      susceptible_to_check_random <- S_current[!new_exposed[S_current]]
+      
+      if(length(susceptible_to_check_random) > 0){
+        
+        # we calculate beta_i * beta_j for all pairs of infected individuals i and susceptibles j
+        beta_product_matrix <- outer(beta[I_current], beta[susceptible_to_check_random])
+        
+        # calculating the probability of random infection for each pair (i, j)
+        p_matrix <- alpha_r * nc * beta_product_matrix / d
+        
+        # we need to calculate the probability that each susceptible j gets infected by at least one infected individual i
+        # to find this, we first calculate the probability that j does not get infected by any i
+        # then, we subtract this from 1 to get the probability that j gets infected by at least one i
+        
+        p_not_infected <- apply(1 - p_matrix, 2, prod)
+        p_infected <- 1 - p_not_infected
+        
+        # now we randomly determine which susceptibles get infected based on the calculated probabilities
+        exposed_from_random <- susceptible_to_check_random[runif(length(susceptible_to_check_random)) < p_infected]
+        new_exposed[exposed_from_random] <- TRUE
+      }
+      
+      status[which(new_exposed)] <- e_state
     }
-    
-    # after checking all infected individuals, we apply the S -> E transitions
-    status[which(new_exposed)] <- e_state
-    
     # updating counts for the day
     S_t[day + 1] <- sum(status == s_state)
     E_t[day + 1] <- sum(status == e_state)
@@ -462,7 +474,7 @@ plot_simulation <- function(simulation_result, title) {
 
 set.seed(42)
 
-population_size <- 1000
+population_size <- 100
 
 max_household_size <- 5
 
