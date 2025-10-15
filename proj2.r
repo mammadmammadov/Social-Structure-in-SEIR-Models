@@ -20,6 +20,7 @@
 
 # Finally, we will run and plot the simulation under different scenarios, such as varying the infection probabilities and sociability parameters, to observe how these changes affect the spread of the disease.
 
+start_time <- proc.time()
 
 # *******************************************************************
 # *******************************************************************
@@ -563,3 +564,6 @@ plot_simulation(result_model_1, "Default parameters")
 plot_simulation(result_model_2, "Only random mixing")
 plot_simulation(result_model_3, "Constant Beta")
 plot_simulation(result_model_4, "Only random mixing and constant Beta")
+
+# printing the time taken for the entire simulation
+(proc.time() - start_time)[3]
