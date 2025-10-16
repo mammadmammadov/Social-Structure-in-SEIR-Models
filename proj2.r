@@ -475,7 +475,7 @@ plot_simulation <- function(simulation_result, title) {
 
 set.seed(42)
 
-population_size <- 100
+population_size <- 10000
 
 max_household_size <- 5
 
@@ -567,3 +567,19 @@ plot_simulation(result_model_4, "Only random mixing and constant Beta")
 
 # printing the time taken for the entire simulation
 (proc.time() - start_time)[3]
+
+# Analysis for 4 plots
+
+# Analysis of the four SEIR plots:
+# 1. Default parameters: All infection routes (household, regular network, random mixing) active.
+#    > Produces a moderate infection peak and takes longer to reach equilibrium state.
+# 2. Only random mixing: Infection spreads homogeneously across the population.
+#    > Leads to a slightly higher and earlier infection peak, with more people infected overall,
+#      but the system also reaches equilibrium faster due to the rapid progression of the outbreak.
+# 3. Constant Beta: All infection routes active, but each person has the same sociability (beta).
+#    > Similar to the default model, showing a lower infection peak and slower return to equilibrium.
+# 4. Only random mixing + Constant Beta: Homogeneous mixing and identical sociability.
+#    > Produces the highest and earliest infection peak, followed by a rapid decline as the outbreak resolves quickly.
+# Overall:
+#   - Random mixing only increases infection intensity and accelerates epidemic resolution.
+#   - Structured or heterogeneous contact patterns flatten the curve and delay equilibrium, however, resulting in fewer total infections overall.
