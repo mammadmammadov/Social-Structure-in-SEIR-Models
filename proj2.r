@@ -1,5 +1,11 @@
 # SOCIAL STRUCTURE IN SEIR MODELS
 
+# TEAM MEMBERS AND CONTRIBUTION
+
+# Mammad Mammadov (S2886087): 33.333... % - Implemented tasks 1-4, helped with the integration of vectorization to naive approach
+# Michael Asad (S2762609): 33.333... % - Implemented tasks 4-5, helped with the debugging in the integration of vectorization 
+# Swyam Salvi (S2879703): 33.333... % - Applied vectorization approach for better efficiency in network generation and simulation
+
 # Repository link: https://github.com/mammadmammadov/Statistical-Programming-Practical-2
 
 # In this project, we will simulate the spread of an infectious disease in a population using an SEIR model.
