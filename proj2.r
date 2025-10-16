@@ -20,10 +20,15 @@
 
 # Finally, we will run and plot the simulation under different scenarios, such as varying the infection probabilities and sociability parameters, to observe how these changes affect the spread of the disease.
 
+# Below is the list of definitions of functions used in this project and necessary code to call them:alink
+
+
 start_time <- proc.time()
+
 
 # *******************************************************************
 # *******************************************************************
+
 
 create_households <- function(n = 1000, hmax = 5) {
   
@@ -61,39 +66,12 @@ create_households <- function(n = 1000, hmax = 5) {
   return(h)
 }
 
-# *******************************************************************
-# *******************************************************************
-
-
-# Testing the create_households function
-
-# population_size <- 1000
-# max_household_size <- 5
-# h <- create_households(n = population_size, hmax = max_household_size)
-# print(head(h, 20))
-# cat(sprintf("Total number of people: %d\n", length(h))) 
-# cat(sprintf("Total number of households: %d\n", length(unique(h))))
-
-# person_id <- 969
-# household_id_of_person_1 <- h[1]
-# members <- which(h == household_id_of_person_1)
-# cat(sprintf("Person %d is in household %d\n", person_id, household_id_of_person_1))
-# print(members)
-
-# # this gives us the size of each household
-# household_size_counts <- table(h)
-
-# # Now, let's create a frequency table of those sizes.
-# size_distribution <- table(household_size_counts)
-
-# cat("\nHousehold Size Distribution\n")
-# print(size_distribution)
 
 # *******************************************************************
 # *******************************************************************
 
 
-# Now we will create the contact network for for the population
+# Now we will create the contact network for the population
 
 get.net <- function(beta, h, nc = 15) {
   
@@ -157,72 +135,12 @@ get.net <- function(beta, h, nc = 15) {
   return(network)
 }
 
-# ************************************************************
-# ************************************************************
-
-# Testing the get.net function
-
-# population_size <- 10000
-# max_household_size <- 5
-# avg_contacts <- 15
-
-
-# # --- Generate Households (Step 1) ---
-# cat("1. Generating household structure...\n")
-# h <- create_households(n = population_size, hmax = max_household_size)
-
-# # --- Generate Sociability Parameters ---
-# # Generate beta as a vector of U(0,1) random variables.
-# cat("2. Generating sociability (beta) parameters from U(0,1)...\n")
-# beta <- runif(population_size)
-
-# # --- Generate Network (Step 2) ---
-# cat("3. Generating social contact network...\n")
-# # This may take a few seconds for n=1000.
-# net <- get.net(beta = beta, h = h, nc = avg_contacts)
-# cat("   ...Network generation complete.\n\n")
-
-# # --- Output and Verification ---
-# cat("--- Network Verification ---\n")
-
-# # Example: View the contacts of person 1
-# person_id <- 1
-# contacts_of_1 <- net[[person_id]]
-# cat(sprintf("Person %d has %d regular contacts:\n", person_id, length(contacts_of_1)))
-# print(contacts_of_1)
-
-# # Verification 1: Check for symmetry
-# # If 1 is connected to (e.g.) the first person in their contact list,
-# # that person must also be connected to 1.
-# if (length(contacts_of_1) > 0) {
-#   first_contact_id <- contacts_of_1[1]
-#   is_symmetric <- person_id %in% net[[first_contact_id]]
-#   cat(sprintf("\nSymmetry check: Is person %d in person %d's contact list? %s\n",
-#               person_id, first_contact_id, is_symmetric))
-# }
-
-# # Verification 2: Check household exclusion
-# # Person 1 should not be connected to anyone in their own household.
-# household_id <- h[person_id]
-# housemates <- which(h == household_id)
-# housemates <- housemates[housemates != person_id] # exclude self
-
-# has_contact_with_housemate <- any(contacts_of_1 %in% housemates)
-# cat(sprintf("Household exclusion check: Does person %d have a network link with a housemate? %s\n",
-#             person_id, has_contact_with_housemate))
-
-# # Calculate and display the average number of connections in the generated network
-# avg_degree <- mean(sapply(net, length))
-# cat(sprintf("\nThe target average number of contacts (nc) was: %d\n", avg_contacts))
-# cat(sprintf("The actual average number of contacts in the network is: %.2f\n", avg_degree))
 
 # ********************************************************************
 # ********************************************************************
+
 
 # Now, we will implement the SEIR model on a given contact network
-
-
-
 
 nseir <- function(beta, h, alink, alpha = c(.1, .01, .01), delta = .2, gamma = .4, nc = 15, nt = 100, pinf = .005){
   
@@ -403,38 +321,12 @@ nseir <- function(beta, h, alink, alpha = c(.1, .01, .01), delta = .2, gamma = .
   
 }
 
-# ************************************************************
-# ************************************************************
-# Testing the nseir function
-
-# set.seed(42)
-# population_size <- 1000
-# max_household_size <- 5
-# average_contacts <- 15
-# simulation_days <- 150
-
-# infection_probabilities <- c(0.1, 0.01, 0.01)
-# prob_recovery <- 0.2 # daily probability of infected -> recovered
-# prob_exposed_to_infected <- 0.4 # daily probability of exposed -> infected
-# initial_infection_rate <- 0.05 # proportion of the initial population to randomly start in the infected state
-
-# beta <- runif(population_size) # sociability parameters
-# h <- create_households(n = population_size, hmax = max_household_size) # assigning households to individuals
-# net <- get.net(beta = beta, h = h, nc = average_contacts) # creating the contact network
-
-# result <- nseir(beta = beta, h = h, alink = net, alpha = infection_probabilities, delta = prob_recovery,
-#  gamma = prob_exposed_to_infected, nc = average_contacts, nt = simulation_days, pinf = initial_infection_rate)
-
-# legend("right", legend = c("susceptible", "exposed", "infected", "recovered"), 
-#        col = c("blue", "orange", "red", "green"), lty = 1)
-
 
 # ************************************************************
 # ************************************************************
+
 
 # now, we will write a function to plot the results of the SEIR simulation
-
-
 
 plot_simulation <- function(simulation_result, title) {
   
@@ -468,8 +360,10 @@ plot_simulation <- function(simulation_result, title) {
          lwd = 2)
 }
 
+
 # ************************************************************
 # ************************************************************
+
 
 # now we will run the full simulation and plot the results in four different scenarios
 
@@ -494,7 +388,7 @@ prob_exposed_to_infected <- 0.4
 # proportion of the initial population to randomly start in the infected state
 initial_infection_rate <- 0.005 
 
-# sociability parameters, drawn from a vector of U(0,1) random variables
+# sociability parameters taken from a vector of U(0,1) random variables
 beta <- runif(population_size) 
 
 # assigning households to individuals
@@ -566,7 +460,7 @@ plot_simulation(result_model_3, "Constant Beta")
 plot_simulation(result_model_4, "Only random mixing and constant Beta")
 
 # printing the time taken for the entire simulation
-(proc.time() - start_time)[3]
+cat(sprintf("\nTotal execution time: %.2f seconds\n", (proc.time() - start_time)[3]))
 
 # Analysis for 4 plots
 
