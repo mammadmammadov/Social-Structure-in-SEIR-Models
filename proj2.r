@@ -20,8 +20,6 @@
 
 # Finally, we will run and plot the simulation under different scenarios, such as varying the infection probabilities and sociability parameters, to observe how these changes affect the spread of the disease.
 
-# Below is the list of definitions of functions used in this project and necessary code to call them:alink
-
 
 start_time <- proc.time()
 
@@ -462,18 +460,17 @@ plot_simulation(result_model_4, "Only random mixing and constant Beta")
 # printing the time taken for the entire simulation
 cat(sprintf("\nTotal execution time: %.2f seconds\n", (proc.time() - start_time)[3]))
 
-# Analysis for 4 plots
-
 # Analysis of the four SEIR plots:
 # 1. Default parameters: All infection routes (household, regular network, random mixing) active.
 #    > Produces a moderate infection peak and takes longer to reach equilibrium state.
-# 2. Only random mixing: Infection spreads homogeneously across the population.
+# 2. Only random mixing: Infection spreads only throught random mixing.
 #    > Leads to a slightly higher and earlier infection peak, with more people infected overall,
 #      but the system also reaches equilibrium faster due to the rapid progression of the outbreak.
 # 3. Constant Beta: All infection routes active, but each person has the same sociability (beta).
 #    > Similar to the default model, showing a lower infection peak and slower return to equilibrium.
-# 4. Only random mixing + Constant Beta: Homogeneous mixing and identical sociability.
-#    > Produces the highest and earliest infection peak, followed by a rapid decline as the outbreak resolves quickly.
+# 4. Only random mixing + Constant Beta: Infection spreads only throught random mixing, and everyone has identical sociability.
+#    > Produces higher and earlier infection peak, followed by a rapid decline as the outbreak resolves quickly.
 # Overall:
 #   - Random mixing only increases infection intensity and accelerates epidemic resolution.
-#   - Structured or heterogeneous contact patterns flatten the curve and delay equilibrium, however, resulting in fewer total infections overall.
+#   - Having interactions within the same groups (like households or regular networks) slow the spread and delay equilibrium, 
+#     but fewer people get infected overall.
