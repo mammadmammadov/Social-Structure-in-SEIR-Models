@@ -1,7 +1,5 @@
 # Social Structure in SEIR Models 🦠
 
-![Built with R](https://img.shields.io/badge/Built%20with-R-276DC3?style=for-the-badge&logo=r)
-
 This repository contains an **R** implementation of an SEIR (Susceptible, Exposed, Infected, Recovered) epidemic model.
 
 Standard SEIR models often assume "random mixing," where individuals interact randomly like molecules of gas. This project refines that assumption by introducing a more realistic social structure, modeling how epidemics spread through households and regular contact networks.
